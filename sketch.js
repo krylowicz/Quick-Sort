@@ -1,7 +1,18 @@
 let values = [];
+let backup = [];
+const swaps = [];
 
 let i = 0;
-let w = 10;
+let w = 5;
+let swapIndex = 0;
+let sorted = false;
+
+class Swap {
+	constructor(a, b) {
+		this.a = a;
+		this.b = b;
+	}
+}
 
 function setup() {
 	createCanvas(800, 200);
@@ -12,8 +23,10 @@ function setup() {
 		values[i] = random(height);
 	}
 
-	frameRate(5);
+	backup = values.slice(0);
+
 	quicksort(values, 0, values.length - 1);
+	sorted = true;
 }
 
 const quicksort = (arr, start, end) => {
@@ -43,15 +56,31 @@ const partition = (arr, start, end) => {
 
 function draw() {
 	background(51);
+	
+	if (swapIndex < swaps.length) {
+		const sw = swaps[swapIndex];
+		swap(backup, sw.a, sw.b);
+		swapIndex++;
+	} else {
+		noLoop();
+		console.log('finished');
+	}
 
-	for (let i = 0; i < values.length; i++) {
+	for (let i = 0; i < backup.length; i++) {
 		stroke(0);
 		fill(255);
-		rect(i * w, height - values[i], w, values[i]);
+		rect(i * w, height - backup[i], w, backup[i]);
 	}
 }
 
 const swap = (arr, a, b) => {
+
+	const swap = new Swap(a, b);
+
+	if (!sorted) {
+		swaps.push(swap);
+	}
+
 	let temp = arr[a];
 	arr[a] = arr[b];
 	arr[b] = temp;
